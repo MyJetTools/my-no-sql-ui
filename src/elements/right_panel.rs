@@ -10,12 +10,20 @@ pub struct RightPanelModel<'a> {
 pub fn right_part<'s>(cx: Scope<'s, RightPanelModel<'s>>) -> Element<'s> {
     let right_panel_state = use_shared_state::<RightPanelState>(cx).unwrap();
 
-    match right_panel_state.read().as_ref() {
+    let right_panel_state = right_panel_state.read();
+
+    let right_panel_state = right_panel_state.as_ref();
+
+    if right_panel_state.is_loading() {
+        return render! { loading_el {} };
+    }
+
+    match right_panel_state {
         RightPanelState::Nothing => {
             render! { div {} }
         }
         RightPanelState::Loading => {
-            render! { div { style: "padding:5px", "Loading..." } }
+            render! { loading_el {} }
         }
         RightPanelState::LoadedPartitions(partitions) => {
             render! {
@@ -97,4 +105,8 @@ pub fn right_part<'s>(cx: Scope<'s, RightPanelModel<'s>>) -> Element<'s> {
             }
         }
     }
+}
+
+fn loading_el(cx: Scope) -> Element {
+    render! { div { style: "padding:5px", "Loading..." } }
 }

@@ -24,6 +24,7 @@ impl UiCommand {
                 if result.data.len() > 1 {
                     let mut right_panel_state = right_panel_state.write();
                     *right_panel_state = RightPanelState::LoadedPartitions(LoadedPartitions {
+                        loading: false,
                         table_name: table_name,
                         partitions: result.data,
                         amount: result.amount,
@@ -36,6 +37,7 @@ impl UiCommand {
                     let rows = actions::get_list_of_rows(&table_name, &partition_key).await;
                     let mut right_panel_state = right_panel_state.write();
                     *right_panel_state = RightPanelState::LoadedRows(LoadedRows {
+                        loading: false,
                         partition_key: partition_key.to_string(),
                         partitions: vec![partition_key],
                         rows,

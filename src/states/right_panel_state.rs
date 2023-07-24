@@ -17,6 +17,20 @@ impl RightPanelState {
         self
     }
 
+    pub fn set_loading(&mut self) {
+        match self {
+            Self::LoadedPartitions(model) => {
+                model.loading = true;
+            }
+            Self::LoadedRows(model) => {
+                model.loading = true;
+            }
+            _ => {
+                *self = RightPanelState::Loading;
+            }
+        }
+    }
+
     pub fn promote_to_loaded_rows(
         &mut self,
         partition_key: String,
@@ -25,6 +39,7 @@ impl RightPanelState {
         match self {
             RightPanelState::LoadedPartitions(partitions) => {
                 let mut new_state = LoadedRows {
+                    loading: false,
                     partition_key,
                     partitions: Vec::new(),
                     rows,
@@ -33,13 +48,23 @@ impl RightPanelState {
                 std::mem::swap(&mut new_state.partitions, &mut partitions.partitions);
                 *self = RightPanelState::LoadedRows(new_state);
             }
-            RightPanelState::LoadedRows(rows_model) => {
-                rows_model.partition_key = partition_key;
-                rows_model.rows = rows;
+            RightPanelState::LoadedRows(model) => {
+                model.partition_key = partition_key;
+                model.rows = rows;
+                model.loading = false;
             }
             _ => {
                 panic!("We can promote to LoadedRows from LoadedPartitions only");
             }
+        }
+    }
+
+    pub fn is_loading(&self) -> bool {
+        match self {
+            Self::Loading => true,
+            RightPanelState::LoadedPartitions(model) => model.loading,
+            RightPanelState::LoadedRows(model) => model.loading,
+            _ => false,
         }
     }
 }

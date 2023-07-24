@@ -1,17 +1,18 @@
+use flurl::IntoFlUrl;
 use serde::Deserialize;
 
 use super::BASE_URL;
 
 pub async fn get_list_of_partitions(table_name: &str) -> ListOfPartitions {
-    let resp = reqwest::Client::new()
-        .get(format!("{BASE_URL}/Partitions?tableName={table_name}"))
-        .send()
+    let resp = BASE_URL
+        .append_path_segment("Partitions")
+        .append_query_param("tableName", Some(table_name))
+        .get()
         .await;
 
     match resp {
         Ok(data) => {
-            let result = data.bytes().await.unwrap();
-            let result: Vec<u8> = result.into();
+            let result = data.receive_body().await.unwrap();
 
             return serde_json::from_slice(&result).unwrap();
         }

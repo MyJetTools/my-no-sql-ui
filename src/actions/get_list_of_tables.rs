@@ -1,4 +1,5 @@
 use dioxus::prelude::{use_shared_state, Scope};
+use flurl::IntoFlUrl;
 use serde::*;
 
 use super::BASE_URL;
@@ -15,15 +16,15 @@ pub fn get_list_of_tables<'s>(cx: &'s Scope<'s>) {
         let tables = tables.to_owned();
 
         async move {
-            let resp = reqwest::Client::new()
-                .get(format!("{BASE_URL}/Tables/List"))
-                .send()
+            let resp = BASE_URL
+                .append_path_segment("Tables")
+                .append_path_segment("List")
+                .get()
                 .await;
 
             match resp {
                 Ok(data) => {
-                    let result = data.bytes().await.unwrap();
-                    let result: Vec<u8> = result.into();
+                    let result = data.receive_body().await.unwrap();
 
                     let result: Vec<Table> = serde_json::from_slice(&result).unwrap();
 

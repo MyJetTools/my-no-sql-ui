@@ -1,21 +1,22 @@
+use flurl::IntoFlUrl;
 use my_json::json_reader::{array_parser::JsonArrayIterator, JsonFirstLineReader};
 
 use super::BASE_URL;
 pub async fn get_list_of_rows(table_name: &str, partition_key: &str) -> Vec<Vec<(String, String)>> {
-    let resp = reqwest::Client::new()
-        .get(format!(
-            "{BASE_URL}/Row?tableName={table_name}&partitionKey={partition_key}"
-        ))
-        .send()
+    let resp = BASE_URL
+        .append_path_segment("Row")
+        .append_query_param("tableName", Some(table_name))
+        .append_query_param("partitionKey", Some(partition_key))
+        .get()
         .await;
 
-    if let Err(err) = &resp {
-        println!("Error: {}", err);
+    if let Err(_) = &resp {
+        println!("Error getting list of rows");
     }
 
     let resp = resp.unwrap();
 
-    let bytes: Vec<u8> = resp.bytes().await.unwrap().into();
+    let bytes: Vec<u8> = resp.receive_body().await.unwrap();
 
     let mut rows = Vec::new();
 
