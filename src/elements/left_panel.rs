@@ -8,18 +8,18 @@ pub struct LeftPanelProps<'a> {
 }
 
 pub fn left_panel<'s>(cx: Scope<'s, LeftPanelProps<'s>>) -> Element<'s> {
-    let selected_table = {
-        let selected_table = use_shared_state::<SelectedTable>(cx).unwrap();
+    let global_state = use_shared_state::<GlobalState>(cx).unwrap();
 
-        selected_table.read().get_selected_table().cloned()
+    let (selected_table, tables) = {
+        let read_access = global_state.read();
+
+        let selected_table = read_access.get_selected_table();
+        let tables = read_access.get_tables();
+
+        (selected_table, tables)
     };
 
-    let table_names = {
-        let tables = use_shared_state::<Tables>(cx).unwrap();
-        tables.read().names.clone()
-    };
-
-    if let Some(table_names) = table_names {
+    if let Some(table_names) = tables {
         render! {
 
             table_names.iter().map(|name|{

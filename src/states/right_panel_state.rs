@@ -6,6 +6,7 @@ pub enum RightPanelState {
     LoadedPartitions(LoadedPartitions),
     LoadedRows(LoadedRows),
     NoPartitions(String),
+    Error(String),
 }
 
 impl RightPanelState {

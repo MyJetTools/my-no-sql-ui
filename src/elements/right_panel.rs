@@ -19,6 +19,9 @@ pub fn right_part<'s>(cx: Scope<'s, RightPanelModel<'s>>) -> Element<'s> {
     }
 
     match right_panel_state {
+        RightPanelState::Error(err) => {
+            render! { div { style: "padding:5px", "{err}" } }
+        }
         RightPanelState::Nothing => {
             render! { div {} }
         }

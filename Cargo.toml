@@ -17,4 +17,8 @@ serde_yaml = "*"
 futures = "*"
 my-json = { tag = "0.2.0", git = "https://github.com/MyJetTools/my-json.git" }
 my-settings-reader = { tag = "0.1.5", git = "https://github.com/MyJetTools/my-settings-reader.git" }
-flurl = { tag = "0.3.0", git = "https://github.com/MyJetTools/fl-url.git" }
+flurl = { tag = "0.3.1", git = "https://github.com/MyJetTools/fl-url.git" }
+
+lazy_static = "*"
+
+rust-extensions = { tag = "0.1.3", git = "https://github.com/MyJetTools/rust-extensions.git" }
