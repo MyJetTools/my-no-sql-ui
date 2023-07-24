@@ -34,6 +34,11 @@ pub fn right_part<'s>(cx: Scope<'s, RightPanelModel<'s>>) -> Element<'s> {
                     })
             }
         }
+        RightPanelState::NoPartitions(table_name) => {
+            render! {
+                div { style: "padding:5px", format!("No partitions found for table '{table_name}'") }
+            }
+        }
         RightPanelState::LoadedRows(rows) => {
             let headers = rows.get_list_of_headers();
             let amount = rows.get_amount();

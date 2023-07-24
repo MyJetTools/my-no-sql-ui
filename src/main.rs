@@ -65,32 +65,8 @@ fn app(cx: Scope) -> Element {
 
     let main_routine = use_coroutine(cx, |mut rx: UnboundedReceiver<UiCommand>| async move {
         while let Some(msg) = rx.next().await {
-            match msg {
-                UiCommand::LoadPartitions(table_name) => {
-                    selected_table_owned
-                        .write()
-                        .set_selected_table(table_name.clone());
-                    let result = actions::get_list_of_partitions(table_name.as_str()).await;
-
-                    let mut right_panel_state = right_panel_state_owned.write();
-                    *right_panel_state = RightPanelState::LoadedPartitions(LoadedPartitions {
-                        table_name: table_name,
-                        partitions: result.data,
-                        amount: result.amount,
-                    });
-                }
-
-                UiCommand::LoadRows(partition_key) => {
-                    let selected_table = {
-                        let selected_table = selected_table_owned.read();
-                        selected_table.get_selected_table().unwrap().clone()
-                    };
-                    let rows = actions::get_list_of_rows(&selected_table, &partition_key).await;
-
-                    let mut right_panel_state = right_panel_state_owned.write();
-                    right_panel_state.promote_to_loaded_rows(partition_key, rows);
-                }
-            }
+            msg.handle_event(&selected_table_owned, &right_panel_state_owned)
+                .await;
         }
     });
 
