@@ -13,42 +13,43 @@ async fn main() {
         app,
         dioxus_desktop::Config::new().with_custom_head(
             r#"
-            <script>
+<script>
             
-            addEventListener("resize", resize);
+    addEventListener("resize", resize);
 
-            function resize(){
+    function resize(){
    
-                    let el = document.getElementById("main");
-                    let winHeight = window.innerHeight;
-                    let winWidth = window.innerWidth;
-                    el.style.setProperty('--main-height', winHeight + "px");
-                    el.style.setProperty('--main-width', winWidth + "px");
+        let el = document.getElementById("main");
+        let winHeight = window.innerHeight;
+        let winWidth = window.innerWidth;
+        el.style.setProperty('--main-height', winHeight + "px");
+        el.style.setProperty('--main-width', winWidth + "px");
     
-                    let topPanel = document.getElementById("top-panel");
-                    let myTopPanelHeight = topPanel.clientHeight;
-                    el.style.setProperty('--working-area-height', (winHeight - topPanel.clientHeight) + "px");
-                    el.style.setProperty('--top-panel-height', topPanel.clientHeight + "px");
+        let topPanel = document.getElementById("top-panel");
+        let myTopPanelHeight = topPanel.clientHeight;
+        el.style.setProperty('--working-area-height', (winHeight - topPanel.clientHeight) + "px");
+        el.style.setProperty('--top-panel-height', topPanel.clientHeight + "px");
     
-                    let leftPanel = document.getElementById("left-panel");
-                     el.style.setProperty('--right-panel-width', (winWidth - leftPanel.clientWidth - 10)  + "px");
-            }
+        let leftPanel = document.getElementById("left-panel");
+        el.style.setProperty('--right-panel-width', (winWidth - leftPanel.clientWidth - 10)  + "px");
+    }
 
-            setTimeout(resize, 100);
-            </script>
-            <style>
-            body{
-                margin: 0;
-                padding: 0;
-                font-family: 'Tahoma', sans-serif;
-                overflow: hidden;
-            }
+    setTimeout(resize, 100);
+</script>
 
-            #top-panel{
-                width:100%;
-                padding:5px;
-                box-shadow: 0 0 5px lightgray;
-                position: absolute;
+<style>
+    body{
+        margin: 0;
+        padding: 0;
+        font-family: 'Tahoma', sans-serif;
+        overflow: hidden;
+    }
+
+    #top-panel{
+        width:100%;
+        padding:5px;
+        box-shadow: 0 0 5px lightgray;
+        position: absolute;
                 top:0;
                 left:0;
                 z-index:1000;
