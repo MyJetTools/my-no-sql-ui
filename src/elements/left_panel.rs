@@ -10,14 +10,19 @@ pub struct LeftPanelProps<'a> {
 pub fn left_panel<'s>(cx: Scope<'s, LeftPanelProps<'s>>) -> Element<'s> {
     let tables_list = use_shared_state::<TablesList>(cx).unwrap();
 
-    let (selected_table, tables) = {
+    let (selected_table, tables, err) = {
         let read_access = tables_list.read();
 
         let selected_table = read_access.get_selected_table();
         let tables = read_access.get_tables();
+        let err = read_access.get_err();
 
-        (selected_table, tables)
+        (selected_table, tables, err)
     };
+
+    if let Some(err) = err {
+        return render! { div { style: "padding:5px; color:red;", "{err}" } };
+    }
 
     if let Some(table_names) = tables {
         render! {
@@ -34,16 +39,18 @@ pub fn left_panel<'s>(cx: Scope<'s, LeftPanelProps<'s>>) -> Element<'s> {
 
                  if selected{
                     rsx! {
-                        div{
-                            class:"table-item selected",
+                        button{
+                            style: "width:100%",
+                            class:"btn btn-primary btn-sm",
                             "{name}"
                             }
                         }
                     }
                     else{
                         rsx! {
-                            div {
-                                class: "table-item",
+                            button {
+                                style: "width:100%",
+                                class: "btn btn-light btn-sm",
 
                                 onclick: move |_| {
                                     cx.props.on_table_selected.call(name.clone());

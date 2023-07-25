@@ -1,6 +1,7 @@
 pub struct TablesList {
     pub selected_table: Option<String>,
     pub tables: Option<Vec<String>>,
+    pub err: Option<String>,
 }
 
 impl TablesList {
@@ -8,6 +9,7 @@ impl TablesList {
         Self {
             selected_table: None,
             tables: None,
+            err: None,
         }
     }
     pub fn set_selected_table(&mut self, table: String) {
@@ -15,7 +17,7 @@ impl TablesList {
     }
 
     pub fn tables_are_loaded(&self) -> bool {
-        self.tables.is_some()
+        self.tables.is_some() || self.err.is_some()
     }
 
     pub fn get_selected_table(&self) -> Option<String> {
@@ -30,8 +32,17 @@ impl TablesList {
         self.tables.clone()
     }
 
+    pub fn get_err(&self) -> Option<String> {
+        self.err.clone()
+    }
+
+    pub fn set_error(&mut self, err: String) {
+        self.err = Some(err);
+    }
+
     pub fn reset(&mut self) {
         self.selected_table = None;
         self.tables = None;
+        self.err = None;
     }
 }

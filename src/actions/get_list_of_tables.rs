@@ -40,17 +40,22 @@ pub fn get_list_of_tables<'s>(cx: &'s Scope<'s>) {
                     let result: Vec<Table> = data.get_json().await.unwrap();
 
                     let names: Vec<String> = result.into_iter().map(|table| table.name).collect();
-                    names
+                    Ok(names)
                 }
-                Err(_err) => {
-                    panic!("Login failed - you need a login server running on localhost:8080.")
-                }
+                Err(_err) => Err("Can not retrieve tables from server".to_string()),
             }
         })
         .await
         .unwrap();
 
-        tables_list.write().set_loaded_tables(names);
+        match names {
+            Ok(names) => {
+                tables_list.write().set_loaded_tables(names);
+            }
+            Err(err) => {
+                tables_list.write().set_error(err);
+            }
+        }
     });
 }
 

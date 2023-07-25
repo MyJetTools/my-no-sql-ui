@@ -6,113 +6,13 @@ mod actions;
 mod elements;
 mod settings_model;
 mod states;
+mod static_resources;
 
 #[tokio::main]
 async fn main() {
-    dioxus_desktop::launch_cfg(
-        app,
-        dioxus_desktop::Config::new().with_custom_head(
-            r#"
-<script>
-            
-    addEventListener("resize", resize);
+    let head = static_resources::get_header_content();
 
-    function resize(){
-   
-        let el = document.getElementById("main");
-        let winHeight = window.innerHeight;
-        let winWidth = window.innerWidth;
-        el.style.setProperty('--main-height', winHeight + "px");
-        el.style.setProperty('--main-width', winWidth + "px");
-    
-        let topPanel = document.getElementById("top-panel");
-        let myTopPanelHeight = topPanel.clientHeight;
-        el.style.setProperty('--working-area-height', (winHeight - topPanel.clientHeight) + "px");
-        el.style.setProperty('--top-panel-height', topPanel.clientHeight + "px");
-    
-        let leftPanel = document.getElementById("left-panel");
-        el.style.setProperty('--right-panel-width', (winWidth - leftPanel.clientWidth - 10)  + "px");
-    }
-
-    setTimeout(resize, 100);
-</script>
-
-<style>
-    body{
-        margin: 0;
-        padding: 0;
-        font-family: 'Tahoma', sans-serif;
-        overflow: hidden;
-    }
-
-    #top-panel{
-        width:100%;
-        padding:5px;
-        box-shadow: 0 0 5px lightgray;
-        position: absolute;
-                top:0;
-                left:0;
-                z-index:1000;
-                background-color: white;
-                opacity: 0.8;
-                
-
-            }
-
-            #main{
-                overflow: hidden;
-            }
-            #main-wrapper{
-                height: var(--main-height); 
-                text-align: center;
-                position:absolute;
-                top:0;
-                left:0;
-                overflow: hidden;
-            }
-
-            #left-panel{
-                width:200px;
-                height:var(--main-height);
-                vertical-align: top;
-                text-align: left;
-                overflow-y: auto;
-                border-right: 1px solid lightgray;
-                padding-top: var(--top-panel-height);
-                margin-bottom: var(--top-panel-height);
-            }
-
-            #right-panel{
-                width: var(--right-panel-width);
-                height:var(--main-height);
-                vertical-align: top;
-                text-align: left;
-                overflow-y: auto;
-                padding-top: var(--top-panel-height);
-            }
-
-            .btn-menu{
-                display: block;
-                width:100%;
-            }
-
-            .table-item{
-                padding:5px;
-                color: gray;
-                cursor: pointer;
-            }
-
-            .selected{
-              color: black !important;
-              border-radius: 5px;
-              background-color: lightgray;
-              box-shadow: 0 0 3px lightgray;
-            }
-
-            </style>"#
-                .to_string(),
-        ),
-    );
+    dioxus_desktop::launch_cfg(app, dioxus_desktop::Config::new().with_custom_head(head));
 }
 
 fn app(cx: Scope) -> Element {
@@ -158,7 +58,7 @@ fn working_app(cx: Scope) -> Element {
         div { id: "main-wrapper",
             table { style: "height: var(--working-area-height); width:100%;",
                 tr {
-                    td { style: "vertical-align: top;",
+                    td { style: "vertical-align: top; padding:0;",
                         div { id: "left-panel",
                             left_panel {
                                 on_table_selected: |selected_table| {
@@ -168,7 +68,7 @@ fn working_app(cx: Scope) -> Element {
                         }
                     }
 
-                    td { style: "vertical-align: top;",
+                    td { style: "vertical-align: top; padding:0;",
                         div { id: "right-panel",
                             right_part {
                                 on_partition_select: |partition_key| {
@@ -202,7 +102,10 @@ fn configuration_panel(cx: Scope) -> Element {
     };
 
     render! {
-        select { onchange: move |evn| {
+        select {
+            class: "form-control",
+            style: "width: 200px; display:inline; font-size:12px;",
+            onchange: move |evn| {
                 for settings in &settings.servers {
                     if settings.name == evn.data.value {
                         global_state.write().set_active_config(settings.clone());

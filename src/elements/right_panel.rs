@@ -35,7 +35,8 @@ pub fn right_part<'s>(cx: Scope<'s, RightPanelModel<'s>>) -> Element<'s> {
                         let partition_key = partition_key.to_string();
 
                         rsx! {
-                            div { style: "padding:5px; border: 1px solid gray; border-radius: 3px; margin:2px; display: inline-block;  cursor:pointer",
+                            div { style: "margin:2px; display: inline-block;  cursor:pointer",
+                            class: "btn btn-primary btn-sm",
                             onclick: move|_|{
                                 cx.props.on_partition_select.call(partition_key.clone());
                             },
@@ -55,7 +56,10 @@ pub fn right_part<'s>(cx: Scope<'s, RightPanelModel<'s>>) -> Element<'s> {
             let amount = rows.get_amount();
             render! {
                 div { style: "overflow-x:scroll",
+                    span { "Partition Key:" }
                     select {
+                        class: "form-control",
+                        style: "width: 200px; display:inline; font-size:12px;",
                         onchange: move |evn| {
                             cx.props.on_partition_select.call(evn.data.value.to_string());
                         },
@@ -70,11 +74,14 @@ pub fn right_part<'s>(cx: Scope<'s, RightPanelModel<'s>>) -> Element<'s> {
                    })
                     }
 
-                    table { style: "width:auto; font-size:10px;-webkit-border-vertical-spacing:0;-webkit-border-horizontal-spacing:0",
+                    table {
+
+                        style: "width:auto; font-size:10px;",
+                        class: "table table-striped",
                         tr {
                             headers.iter().map(|header| {
                         rsx! {
-                            th {style:" border: 1px solid;", "{header}"}
+                            th { "{header}"}
                         }
                     })
                         }
@@ -87,7 +94,7 @@ pub fn right_part<'s>(cx: Scope<'s, RightPanelModel<'s>>) -> Element<'s> {
                                     match value{
                                         Some(value)=>{
                                             rsx!{
-                                                td {style:" border: 1px solid;",
+                                                td {
                                                 div{ style:"width:200px; height:100px; overflow-y:auto; overflow-wrap:anywhere","{value}"}
                                             }
                                             }
@@ -95,7 +102,7 @@ pub fn right_part<'s>(cx: Scope<'s, RightPanelModel<'s>>) -> Element<'s> {
                                         },
                                         None=>{
                                             rsx!{
-                                                td {style:" border: 1px solid; width:100px",}
+                                                td {}
                                             }
                                         }
                                     }
