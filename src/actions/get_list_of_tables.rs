@@ -2,16 +2,17 @@ use dioxus::prelude::{use_shared_state, Scope};
 
 use serde::*;
 
-use crate::states::GlobalState;
+use crate::states::{GlobalState, TablesList};
 
 pub fn get_list_of_tables<'s>(cx: &'s Scope<'s>) {
     let global_state = use_shared_state::<GlobalState>(cx).unwrap();
+    let tables_list = use_shared_state::<TablesList>(cx).unwrap();
 
-    if global_state.read().tables_are_loaded() {
+    if tables_list.read().tables_are_loaded() {
         return;
     }
 
-    let global_state = global_state.to_owned();
+    let tables_list = tables_list.to_owned();
 
     let active_config = global_state.read().unwrap_active_config();
 
@@ -26,10 +27,17 @@ pub fn get_list_of_tables<'s>(cx: &'s Scope<'s>) {
                 .await;
 
             match resp {
-                Ok(data) => {
-                    let result = data.receive_body().await.unwrap();
-
-                    let result: Vec<Table> = serde_json::from_slice(&result).unwrap();
+                Ok(mut data) => {
+                    let status_code = data.get_status_code();
+                    if status_code != 200 {
+                        let result = data.receive_body().await.unwrap();
+                        panic!(
+                            "Code: {}. Msg: {}",
+                            status_code,
+                            String::from_utf8(result).unwrap()
+                        );
+                    }
+                    let result: Vec<Table> = data.get_json().await.unwrap();
 
                     let names: Vec<String> = result.into_iter().map(|table| table.name).collect();
                     names
@@ -42,7 +50,7 @@ pub fn get_list_of_tables<'s>(cx: &'s Scope<'s>) {
         .await
         .unwrap();
 
-        global_state.write().set_loaded_tables(names);
+        tables_list.write().set_loaded_tables(names);
     });
 }
 

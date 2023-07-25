@@ -68,4 +68,8 @@ impl RightPanelState {
             _ => false,
         }
     }
+
+    pub fn reset(&mut self) {
+        *self = RightPanelState::Nothing;
+    }
 }

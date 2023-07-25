@@ -15,15 +15,13 @@ pub async fn get_list_of_partitions(
         .await;
 
     match resp {
-        Ok(data) => {
+        Ok(mut data) => {
             if data.get_status_code() != 200 {
                 let result = data.receive_body().await.unwrap();
                 return Err(String::from_utf8(result).unwrap());
             }
 
-            let result = data.receive_body().await.unwrap();
-
-            return Ok(serde_json::from_slice(&result).unwrap());
+            return Ok(data.get_json().await.unwrap());
         }
         Err(err) => {
             return Err(format!("{:?}", err));

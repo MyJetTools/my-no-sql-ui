@@ -8,10 +8,10 @@ pub struct LeftPanelProps<'a> {
 }
 
 pub fn left_panel<'s>(cx: Scope<'s, LeftPanelProps<'s>>) -> Element<'s> {
-    let global_state = use_shared_state::<GlobalState>(cx).unwrap();
+    let tables_list = use_shared_state::<TablesList>(cx).unwrap();
 
     let (selected_table, tables) = {
-        let read_access = global_state.read();
+        let read_access = tables_list.read();
 
         let selected_table = read_access.get_selected_table();
         let tables = read_access.get_tables();
@@ -52,7 +52,8 @@ pub fn left_panel<'s>(cx: Scope<'s, LeftPanelProps<'s>>) -> Element<'s> {
                             }
                         }
                     }
-        })
+        }),
+            div { style: "height: var(--top-panel-height);" }
         }
     } else {
         render! { div { style: "padding:5px", "Loading..." } }

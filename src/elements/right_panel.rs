@@ -69,6 +69,7 @@ pub fn right_part<'s>(cx: Scope<'s, RightPanelModel<'s>>) -> Element<'s> {
                         }
                    })
                     }
+
                     table { style: "width:auto; font-size:10px;-webkit-border-vertical-spacing:0;-webkit-border-horizontal-spacing:0",
                         tr {
                             headers.iter().map(|header| {
@@ -104,6 +105,7 @@ pub fn right_part<'s>(cx: Scope<'s, RightPanelModel<'s>>) -> Element<'s> {
                         }
                     })
                     }
+                    div { style: "height: var(--top-panel-height);" }
                 }
             }
         }
