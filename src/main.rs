@@ -80,10 +80,7 @@ fn working_app(cx: Scope) -> Element {
                 }
             }
         }
-        div { id: "top-panel",
-            span { "Select Configuration:" }
-            configuration_panel {}
-        }
+        div { id: "top-panel", configuration_panel {} }
     )
 }
 
@@ -102,34 +99,48 @@ fn configuration_panel(cx: Scope) -> Element {
     };
 
     render! {
-        select {
-            class: "form-control",
-            style: "width: 200px; display:inline; font-size:12px;",
-            onchange: move |evn| {
-                for settings in &settings.servers {
-                    if settings.name == evn.data.value {
-                        global_state.write().set_active_config(settings.clone());
-                        tables_list.write().reset();
-                        right_panel.write().reset();
-                        break;
-                    }
-                }
-            },
-            settings.servers.iter().map(|server|{
 
-                let selected = if let Some(active_config) =&active_config{
-                    active_config.url == server.url
-                }else{
-                    false
-                };
-                rsx!{
-                    option {
-                        value: "{server.name}",
-                        selected:  selected,
-                        "{server.name}"
+        table {
+            tr {
+                td {
+                    ul { class: "nav nav-tabs",
+                        li { class: "nav-item", a { class: "nav-link active", "Table Data" } }
+                        li { class: "nav-item", a { class: "nav-link", "Server stats" } }
                     }
                 }
-            })
+                td {
+                    span { style: "padding-left: 100px", "Select Server:" }
+                    select {
+                        class: "form-control",
+                        style: "width: 200px; display:inline; font-size:12px;",
+                        onchange: move |evn| {
+                            for settings in &settings.servers {
+                                if settings.name == evn.data.value {
+                                    global_state.write().set_active_config(settings.clone());
+                                    tables_list.write().reset();
+                                    right_panel.write().reset();
+                                    break;
+                                }
+                            }
+                        },
+                        settings.servers.iter().map(|server|{
+
+                            let selected = if let Some(active_config) =&active_config{
+                                active_config.url == server.url
+                            }else{
+                                false
+                            };
+                            rsx!{
+                                option {
+                                    value: "{server.name}",
+                                    selected:  selected,
+                                    "{server.name}"
+                                }
+                            }
+                        })
+                    }
+                }
+            }
         }
     }
 }

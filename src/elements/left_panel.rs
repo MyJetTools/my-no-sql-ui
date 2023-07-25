@@ -27,7 +27,8 @@ pub fn left_panel<'s>(cx: Scope<'s, LeftPanelProps<'s>>) -> Element<'s> {
     if let Some(table_names) = tables {
         render! {
 
-            table_names.iter().map(|name|{
+            ul { class: "list-group",
+                table_names.iter().map(|name|{
 
                 let name = name.to_string();
 
@@ -39,19 +40,18 @@ pub fn left_panel<'s>(cx: Scope<'s, LeftPanelProps<'s>>) -> Element<'s> {
 
                  if selected{
                     rsx! {
-                        button{
-                            style: "width:100%",
-                            class:"btn btn-primary btn-sm",
+                        li{
+
+                            class:"list-group-item active",
                             "{name}"
                             }
                         }
                     }
                     else{
                         rsx! {
-                            button {
-                                style: "width:100%",
-                                class: "btn btn-light btn-sm",
-
+                            li {
+                                style: "cursor:default;",
+                                class: "list-group-item",
                                 onclick: move |_| {
                                     cx.props.on_table_selected.call(name.clone());
                                 },
@@ -59,8 +59,9 @@ pub fn left_panel<'s>(cx: Scope<'s, LeftPanelProps<'s>>) -> Element<'s> {
                             }
                         }
                     }
-        }),
-            div { style: "height: var(--top-panel-height);" }
+
+        })
+            }
         }
     } else {
         render! { div { style: "padding:5px", "Loading..." } }

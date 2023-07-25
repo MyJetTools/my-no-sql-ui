@@ -14,9 +14,7 @@ body {
     left: 0;
     z-index: 1000;
     background-color: white;
-    opacity: 0.8;
-
-
+    opacity: 0.9;
 }
 
 #main {
@@ -38,9 +36,10 @@ body {
     vertical-align: top;
     text-align: left;
     overflow-y: auto;
-    border-right: 1px solid lightgray;
     padding-top: var(--top-panel-height);
     margin-bottom: var(--top-panel-height);
+    padding-left: 2px;
+    padding-right: 2px;
 }
 
 #right-panel {

@@ -77,8 +77,9 @@ pub fn right_part<'s>(cx: Scope<'s, RightPanelModel<'s>>) -> Element<'s> {
                     table {
 
                         style: "width:auto; font-size:10px;",
-                        class: "table table-striped",
-                        tr {
+
+                        class: "table table-bordered  table-sm",
+                        thead { class: "table-light",
                             headers.iter().map(|header| {
                         rsx! {
                             th { "{header}"}
@@ -112,7 +113,6 @@ pub fn right_part<'s>(cx: Scope<'s, RightPanelModel<'s>>) -> Element<'s> {
                         }
                     })
                     }
-                    div { style: "height: var(--top-panel-height);" }
                 }
             }
         }
