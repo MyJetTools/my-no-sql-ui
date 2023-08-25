@@ -45,10 +45,17 @@ pub fn get_list_of_tables<'s>(cx: &'s Scope<'s>) {
                 Err(_err) => Err("Can not retrieve tables from server".to_string()),
             }
         })
-        .await
-        .unwrap();
+        .await;
 
-        match names {
+        if let Err(err) = &names {
+            tables_list.write().set_error(format!(
+                "Can not retrieve tables from server: Err:{:?}",
+                err
+            ));
+            return;
+        }
+
+        match names.unwrap() {
             Ok(names) => {
                 tables_list.write().set_loaded_tables(names);
             }
