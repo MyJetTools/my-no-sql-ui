@@ -1,6 +1,8 @@
+use std::collections::BTreeMap;
+
 pub struct TablesList {
     pub selected_table: Option<String>,
-    pub tables: Option<Vec<String>>,
+    pub tables: Option<BTreeMap<String, ()>>,
     pub err: Option<String>,
 }
 
@@ -24,12 +26,24 @@ impl TablesList {
         self.selected_table.clone()
     }
 
-    pub fn set_loaded_tables(&mut self, tables: Vec<String>) {
+    pub fn set_loaded_tables(&mut self, src: Vec<String>) {
+        let mut tables = BTreeMap::new();
+
+        for table in src {
+            tables.insert(table, ());
+        }
+
         self.tables = Some(tables);
     }
 
     pub fn get_tables(&self) -> Option<Vec<String>> {
-        self.tables.clone()
+        let result: Vec<String> = self
+            .tables
+            .as_ref()?
+            .keys()
+            .map(|table| table.to_string())
+            .collect();
+        Some(result)
     }
 
     pub fn get_err(&self) -> Option<String> {
