@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, time::Duration};
 
 use flurl::ClientCertificate;
 use rust_extensions::StopWatch;
@@ -28,11 +28,9 @@ impl MyNoSqlConfig {
             {
                 let read_access = SETTINGS_MODEL.read().await;
                 if let Some(value) = read_access.get(cert_location) {
-                    return flurl::FlUrl::new_with_timeout(
-                        self.url.as_str(),
-                        std::time::Duration::from_secs(3),
-                    )
-                    .with_client_certificate(value.clone());
+                    return flurl::FlUrl::new(self.url.as_str())
+                        .set_timeout(Duration::from_secs(3))
+                        .with_client_certificate(value.clone());
                 }
             }
 
@@ -42,14 +40,12 @@ impl MyNoSqlConfig {
                 let mut write_access = SETTINGS_MODEL.write().await;
                 write_access.insert(cert_location.to_string(), identity.clone());
 
-                return flurl::FlUrl::new_with_timeout(
-                    self.url.as_str(),
-                    std::time::Duration::from_secs(3),
-                )
-                .with_client_certificate(identity);
+                return flurl::FlUrl::new(self.url.as_str())
+                    .set_timeout(Duration::from_secs(3))
+                    .with_client_certificate(identity);
             }
         }
-        flurl::FlUrl::new_with_timeout(self.url.as_str(), std::time::Duration::from_secs(3))
+        flurl::FlUrl::new(self.url.as_str()).set_timeout(Duration::from_secs(3))
     }
 }
 
