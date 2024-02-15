@@ -1,4 +1,5 @@
-use my_json::json_reader::{array_parser::JsonArrayIterator, JsonFirstLineReader};
+use my_json::json_reader::array_iterator::JsonArrayIterator;
+use rust_extensions::array_of_bytes_iterator::SliceIterator;
 
 use crate::settings_model::MyNoSqlConfig;
 
@@ -31,12 +32,18 @@ pub async fn get_list_of_rows(
 
     let mut rows = Vec::new();
 
-    for json_item in JsonArrayIterator::new(bytes.as_slice()) {
+    let slice_iterator = SliceIterator::new(bytes.as_slice());
+
+    let mut json_array_iterator = JsonArrayIterator::new(slice_iterator);
+
+    while let Some(json_item) = json_array_iterator.get_next() {
         let json_item = json_item.unwrap();
 
         let mut item = Vec::new();
 
-        for line in JsonFirstLineReader::new(json_item) {
+        let mut json = json_item.unwrap_as_object().unwrap();
+
+        while let Some(line) = json.get_next() {
             let line = line.unwrap();
 
             item.push((

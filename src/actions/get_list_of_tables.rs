@@ -42,7 +42,7 @@ pub fn get_list_of_tables<'s>(cx: &'s Scope<'s>) {
                     let names: Vec<String> = result.into_iter().map(|table| table.name).collect();
                     Ok(names)
                 }
-                Err(_err) => Err("Can not retrieve tables from server".to_string()),
+                Err(err) => Err(format!("Can not retrieve tables from server {:?}", err)),
             }
         })
         .await;

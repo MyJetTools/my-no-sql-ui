@@ -1,6 +1,6 @@
 use std::{collections::HashMap, time::Duration};
 
-use flurl::ClientCertificate;
+use flurl::my_tls::ClientCertificate;
 use rust_extensions::StopWatch;
 use serde::Deserialize;
 use tokio::sync::RwLock;
@@ -56,12 +56,7 @@ async fn load_cert(path: &str, password: &str) -> ClientCertificate {
         path.to_string()
     };
 
-    let mut sw = StopWatch::new();
-    sw.start();
-    let content: &Vec<u8> = &tokio::fs::read(path.as_str()).await.unwrap();
-    sw.pause();
-
-    let result = ClientCertificate::from_pkcs12(content, password);
+    let result = ClientCertificate::from_pks12_file(path.as_str(), password).await;
 
     result
 }
