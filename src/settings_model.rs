@@ -1,13 +1,21 @@
-use std::{collections::HashMap, time::Duration};
+use std::time::Duration;
 
 use flurl::my_tls::ClientCertificate;
-use rust_extensions::StopWatch;
 use serde::Deserialize;
-use tokio::sync::RwLock;
 
 #[derive(my_settings_reader::SettingsModel, Deserialize, Clone)]
 pub struct SettingsModel {
     pub servers: Vec<MyNoSqlConfig>,
+}
+
+impl SettingsModel {
+    pub fn get_my_no_sql_config(&self, env_name: &str) -> MyNoSqlConfig {
+        self.servers
+            .iter()
+            .find(|x| x.name == env_name)
+            .unwrap()
+            .clone()
+    }
 }
 
 #[derive(Deserialize, Clone)]
@@ -18,45 +26,27 @@ pub struct MyNoSqlConfig {
     pub cert_password: Option<String>,
 }
 
-lazy_static::lazy_static! {
-    pub static ref SETTINGS_MODEL: RwLock<HashMap<String, ClientCertificate>> = RwLock::new(HashMap::new());
+#[derive(Deserialize, Clone)]
+pub struct SshConfig {
+    pub host: String,
+    pub port: u16,
+    pub user: String,
 }
 
 impl MyNoSqlConfig {
     pub async fn get_fl_url(&self) -> flurl::FlUrl {
         if let Some(cert_location) = &self.cert_location {
-            {
-                let read_access = SETTINGS_MODEL.read().await;
-                if let Some(value) = read_access.get(cert_location) {
-                    return flurl::FlUrl::new(self.url.as_str())
-                        .set_timeout(Duration::from_secs(3))
-                        .with_client_certificate(value.clone());
-                }
-            }
-
             if let Some(cert_password) = &self.cert_password {
-                let identity = load_cert(cert_location, cert_password).await;
+                let cert_location = rust_extensions::file_utils::format_path(cert_location);
 
-                let mut write_access = SETTINGS_MODEL.write().await;
-                write_access.insert(cert_location.to_string(), identity.clone());
+                let client_certificate =
+                    ClientCertificate::from_pks12_file(cert_location.as_str(), cert_password).await;
 
                 return flurl::FlUrl::new(self.url.as_str())
                     .set_timeout(Duration::from_secs(3))
-                    .with_client_certificate(identity);
+                    .with_client_certificate(client_certificate);
             }
         }
         flurl::FlUrl::new(self.url.as_str()).set_timeout(Duration::from_secs(3))
     }
-}
-
-async fn load_cert(path: &str, password: &str) -> ClientCertificate {
-    let path = if path.starts_with("~") {
-        path.replace("~", std::env::var("HOME").unwrap().as_str())
-    } else {
-        path.to_string()
-    };
-
-    let result = ClientCertificate::from_pks12_file(path.as_str(), password).await;
-
-    result
 }

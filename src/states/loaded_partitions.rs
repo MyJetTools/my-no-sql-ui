@@ -1,6 +1,7 @@
+use std::rc::Rc;
+
+#[derive(Clone)]
 pub struct LoadedPartitions {
-    pub loading: bool,
-    pub table_name: String,
-    pub partitions: Vec<String>,
-    pub amount: usize,
+    pub table_name: Rc<String>,
+    pub partitions: Vec<Rc<String>>,
 }

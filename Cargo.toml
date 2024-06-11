@@ -5,20 +5,37 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+
+[features]
+default = []
+server = [
+    "dioxus/axum",
+    "my-logger",
+    "tokio",
+    "async-trait",
+    "futures",
+    "lazy_static",
+    "serde_yaml",
+    "flurl",
+    "rust-extensions",
+    "my-settings-reader",
+]
+web = ["dioxus/web"]
+
 [dependencies]
-dioxus = "*"
+dioxus = { version = "0.5", features = ["fullstack", "router"] }
 
-
-dioxus-desktop = "*"
-tokio = { version = "*", features = ["full"] }
+tokio = { version = "*", features = ["full"], optional = true }
 serde = { version = "*", features = ["derive"] }
 serde_json = "*"
-serde_yaml = "*"
-futures = "*"
-my-json = { tag = "0.2.3", git = "https://github.com/MyJetTools/my-json.git" }
-my-settings-reader = { tag = "0.3.0", git = "https://github.com/MyJetTools/my-settings-reader.git" }
-flurl = { tag = "0.5.1", git = "https://github.com/MyJetTools/fl-url.git" }
+serde_yaml = { version = "*", optional = true }
+futures = { version = "*", optional = true }
+my-json = { tag = "0.2.4", git = "https://github.com/MyJetTools/my-json.git" }
+my-settings-reader = { tag = "0.3.1", git = "https://github.com/MyJetTools/my-settings-reader.git", optional = true }
+flurl = { tag = "0.5.2", git = "https://github.com/MyJetTools/fl-url.git", optional = true }
 
-lazy_static = "*"
+lazy_static = { version = "*", optional = true }
 
-rust-extensions = { tag = "0.1.4", git = "https://github.com/MyJetTools/rust-extensions.git" }
+rust-extensions = { tag = "0.1.4", git = "https://github.com/MyJetTools/rust-extensions.git", optional = true }
+async-trait = { version = "*", optional = true }
+my-logger = { tag = "1.1.0", git = "https://github.com/MyJetTools/my-logger.git", optional = true }

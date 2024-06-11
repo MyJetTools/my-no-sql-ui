@@ -4,6 +4,8 @@ pub struct TablesList {
     pub selected_table: Option<String>,
     pub tables: Option<BTreeMap<String, ()>>,
     pub err: Option<String>,
+
+    pub loading: bool,
 }
 
 impl TablesList {
@@ -12,14 +14,11 @@ impl TablesList {
             selected_table: None,
             tables: None,
             err: None,
+            loading: false,
         }
     }
     pub fn set_selected_table(&mut self, table: String) {
         self.selected_table = Some(table);
-    }
-
-    pub fn tables_are_loaded(&self) -> bool {
-        self.tables.is_some() || self.err.is_some()
     }
 
     pub fn get_selected_table(&self) -> Option<String> {
@@ -34,6 +33,8 @@ impl TablesList {
         }
 
         self.tables = Some(tables);
+
+        self.loading = false;
     }
 
     pub fn get_tables(&self) -> Option<Vec<String>> {
@@ -52,11 +53,6 @@ impl TablesList {
 
     pub fn set_error(&mut self, err: String) {
         self.err = Some(err);
-    }
-
-    pub fn reset(&mut self) {
-        self.selected_table = None;
-        self.tables = None;
-        self.err = None;
+        self.loading = false;
     }
 }

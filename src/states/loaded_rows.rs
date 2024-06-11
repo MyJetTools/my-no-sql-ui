@@ -1,7 +1,5 @@
+#[derive(Clone)]
 pub struct LoadedRows {
-    pub loading: bool,
-    pub partition_key: String,
-    pub partitions: Vec<String>,
     pub rows: Vec<Vec<(String, String)>>,
 }
 

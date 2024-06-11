@@ -1,10 +1,10 @@
-use dioxus::prelude::{use_shared_state, Scope};
+use dioxus::prelude::*;
 
 use serde::*;
 
 use crate::states::{GlobalState, TablesList};
 
-pub fn get_list_of_tables<'s>(cx: &'s Scope<'s>) {
+pub fn get_list_of_tables() {
     let global_state = use_shared_state::<GlobalState>(cx).unwrap();
     let tables_list = use_shared_state::<TablesList>(cx).unwrap();
 

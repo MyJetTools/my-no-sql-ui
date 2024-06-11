@@ -1,29 +1,45 @@
+#![allow(non_snake_case)]
+
 use crate::states::*;
 use dioxus::prelude::*;
-use elements::*;
+use views::*;
 
-mod actions;
-mod elements;
+//#[cfg(feature = "server")]
+//mod actions;
+#[cfg(feature = "server")]
+mod app_ctx;
+#[cfg(feature = "server")]
 mod settings_model;
 mod states;
-mod static_resources;
+mod views;
 
-#[tokio::main]
-async fn main() {
-    let head = static_resources::get_header_content();
-
-    dioxus_desktop::launch_cfg(app, dioxus_desktop::Config::new().with_custom_head(head));
+#[cfg(feature = "server")]
+lazy_static::lazy_static! {
+    pub static ref APP_CTX: crate::app_ctx::AppContext = {
+        crate::app_ctx::AppContext::new()
+    };
 }
 
-fn app(cx: Scope) -> Element {
-    use_shared_state_provider(cx, || GlobalState::ReadingSettings);
+fn main() {
+    let cfg = dioxus::fullstack::Config::new();
 
-    use_shared_state_provider(cx, || RightPanelState::new());
+    #[cfg(feature = "server")]
+    let cfg = cfg.addr(([0, 0, 0, 0], 9001));
 
-    use_shared_state_provider(cx, || TablesList::new());
+    LaunchBuilder::fullstack().with_cfg(cfg).launch(app)
+}
 
-    let global_state = use_shared_state::<GlobalState>(cx).unwrap();
+fn app() -> Element {
+    use_context_provider(|| Signal::new(EnvListState::new()));
+    use_context_provider(|| Signal::new(RightPanelState::new()));
+    use_context_provider(|| Signal::new(TablesList::new()));
 
+    rsx! {
+        LeftPanel {}
+        RightPanel {}
+    }
+
+    /*
     let need_to_read_settings = {
         let global_state = global_state.read();
         global_state.is_reading_settings()
@@ -49,9 +65,11 @@ fn app(cx: Scope) -> Element {
         GlobalState::ReadingSettings => render! { div { "Reading settings..." } },
         GlobalState::Active(_) => render! { working_app {} },
     }
+     */
 }
 
-fn working_app(cx: Scope) -> Element {
+/*
+fn working_app() -> Element {
     actions::get_list_of_tables(&cx);
     let right_panel = use_shared_state::<RightPanelState>(cx).unwrap();
     render!(
@@ -254,3 +272,4 @@ fn load_rows(
         }
     });
 }
+ */

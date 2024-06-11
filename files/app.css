@@ -3,6 +3,22 @@ body {
     padding: 0;
     font-family: 'Tahoma', sans-serif;
     overflow: hidden;
+    --panel-width: 200px;
+    --app-width: 100vw;
+    --app-height: 100vh;
+    --left-panel-color: rgb(40, 42, 66);
+}
+
+#left-panel {
+    position: absolute;
+    top: 0;
+    width: var(--panel-width);
+    height: var(--app-height);
+    left: 0;
+    background-color: var(--left-panel-color);
+    box-shadow: 0 0 5px black;
+    z-index: 10;
+    overflow-y: auto;
 }
 
 #top-panel {
@@ -19,6 +35,7 @@ body {
 
 #main {
     overflow: hidden;
+    margin-left: var(--panel-width);
 }
 
 #main-wrapper {
@@ -28,18 +45,6 @@ body {
     top: 0;
     left: 0;
     overflow: hidden;
-}
-
-#left-panel {
-    width: 200px;
-    height: var(--main-height);
-    vertical-align: top;
-    text-align: left;
-    overflow-y: auto;
-    padding-top: var(--top-panel-height);
-    margin-bottom: var(--top-panel-height);
-    padding-left: 2px;
-    padding-right: 2px;
 }
 
 #right-panel {
@@ -58,8 +63,9 @@ body {
 
 .table-item {
     padding: 5px;
-    color: gray;
+    color: white;
     cursor: pointer;
+    font-size: 14px;
 }
 
 .selected {
@@ -67,4 +73,5 @@ body {
     border-radius: 5px;
     background-color: lightgray;
     box-shadow: 0 0 3px lightgray;
+    cursor: default !important;
 }
