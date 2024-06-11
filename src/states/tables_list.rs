@@ -17,6 +17,13 @@ impl TablesList {
             loading: false,
         }
     }
+
+    pub fn reset(&mut self) {
+        self.selected_table = None;
+        self.tables = None;
+        self.err = None;
+        self.loading = false;
+    }
     pub fn set_selected_table(&mut self, table: String) {
         self.selected_table = Some(table);
     }

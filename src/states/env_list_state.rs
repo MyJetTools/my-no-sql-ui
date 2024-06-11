@@ -24,4 +24,8 @@ impl EnvListState {
         self.items = Some(items);
         self.loading = false;
     }
+
+    pub fn set_active_env(&mut self, selected_env: Rc<String>) {
+        self.selected_env = Some(selected_env);
+    }
 }

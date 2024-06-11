@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::EnvListState;
+use crate::{EnvListState, RightPanelState, TablesList};
 
 #[component]
 pub fn EnvList() -> Element {
@@ -48,7 +48,13 @@ pub fn EnvList() -> Element {
             h4 { style: "color:white;text-shadow: 1px 1px 1px #747474;", "MyNoSqlServer" }
             select {
                 class: "form-control",
+
                 style: "background-color: #2c2c2c;color: white;border-color: black;",
+                onchange: move |e| {
+                    envs_state.write().set_active_env(e.value().into());
+                    consume_context::<Signal<TablesList>>().write().reset();
+                    consume_context::<Signal<RightPanelState>>().write().reset();
+                },
                 {items}
             }
         }

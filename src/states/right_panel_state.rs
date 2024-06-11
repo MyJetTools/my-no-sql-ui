@@ -28,6 +28,17 @@ impl RightPanelState {
         }
     }
 
+    pub fn reset(&mut self) {
+        self.env = None;
+        self.table_name = None;
+        self.partitions = None;
+        self.selected_partition = None;
+        self.loading_partitions = false;
+        self.error = None;
+        self.loaded_rows = None;
+        self.loading_rows = false;
+    }
+
     pub fn unwrap_table_name(&self) -> Rc<String> {
         self.table_name.clone().unwrap()
     }

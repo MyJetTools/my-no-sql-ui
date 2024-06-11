@@ -186,26 +186,31 @@ pub fn RightPanel() -> Element {
      });
 
     rsx! {
-        div { style: "overflows-y:auto",
-            div { style: "overflow-x:scroll",
-                span { "Partition Key:" }
-                select {
-                    class: "form-control",
-                    style: "width: 200px; display:inline; font-size:12px;",
-                    onchange: move |evn| {
-                        let value = evn.value();
-                        right_panel_state.write().select_partition(Rc::new(value));
-                    },
 
-                    {rows_to_render}
-                }
+        div { style: "overflow-x:scroll",
+            span { "Partition Key:" }
+            select {
+                class: "form-control",
+                style: "width: 200px; display:inline; font-size:12px;",
+                onchange: move |evn| {
+                    let value = evn.value();
+                    right_panel_state.write().select_partition(Rc::new(value));
+                },
 
+                {rows_to_render}
+            }
+
+            div { style: "height: calc(var(--app-height) - 30px); overflow-y:auto",
                 table {
 
                     style: "width:auto; font-size:10px;",
 
                     class: "table table-bordered  table-sm",
-                    thead { class: "table-light", {headers_to_render} }
+                    thead {
+                        class: "table-light",
+                        style: "position: sticky;top: 0;background-color: lightgray;",
+                        {headers_to_render}
+                    }
 
                     {header_values}
                 }
