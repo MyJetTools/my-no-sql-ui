@@ -4,7 +4,7 @@ on:
     tags: ["*"]
 
 env:
-  IMAGE_NAME: mycfdplatform/my-no-sql-ui
+  IMAGE_NAME: myjettools/my-no-sql-ui
 
 jobs:
   build:

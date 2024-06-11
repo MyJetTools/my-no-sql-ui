@@ -83,44 +83,6 @@ impl RightPanelState {
         None
     }
 
-    /*
-         pub fn promote_to_loaded_rows(
-             &mut self,
-             partition_key: String,
-             rows: Vec<Vec<(String, String)>>,
-         ) {
-             match self {
-                 Self::LoadedPartitions(partitions) => {
-                     let mut new_state = LoadedRows {
-                         partition_key,
-                         partitions: Vec::new(),
-                         rows,
-                     };
-
-                     std::mem::swap(&mut new_state.partitions, &mut partitions.partitions);
-                     *self = Self::LoadedRows(new_state);
-                 }
-                 Self::LoadedRows(model) => {
-                     model.partition_key = partition_key;
-                     model.rows = rows;
-                 }
-                 _ => {
-                     panic!("We can promote to LoadedRows from LoadedPartitions only");
-                 }
-             }
-         }
-
-      pub fn is_loading(&self) -> bool {
-          match self {
-              Self::LoadingPartitionsList(_) => true,
-              _ => false,
-          }
-      }
-
-      pub fn reset(&mut self) {
-          *self = Self::Nothing;
-      }
-    */
     pub fn set_error(&mut self, msg: String) {
         self.error = Some(msg);
     }
