@@ -6,9 +6,13 @@ use crate::{EnvListState, RightPanelState, TablesList};
 pub fn EnvList() -> Element {
     let mut envs_state = consume_context::<Signal<EnvListState>>();
 
-    let (items, loading) = {
+    let (items, loading, selected_env) = {
         let read_access = envs_state.read();
-        (read_access.items.clone(), read_access.loading)
+        (
+            read_access.items.clone(),
+            read_access.loading,
+            read_access.selected_env.clone(),
+        )
     };
 
     if envs_state.read().items.is_none() {
@@ -38,6 +42,14 @@ pub fn EnvList() -> Element {
     let items = items.unwrap();
 
     let items = items.into_iter().map(|itm| {
+        if let Some(selected_env) = selected_env.as_ref() {
+            if selected_env.as_str() == itm.as_str() {
+                return rsx! {
+                    option { selected: true, "{itm}" }
+                };
+            }
+        }
+
         rsx! {
             option { "{itm}" }
         }
