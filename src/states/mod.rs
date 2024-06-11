@@ -1,4 +1,3 @@
-mod loaded_partitions;
 mod loaded_rows;
 mod right_panel_state;
 mod tables_list;
