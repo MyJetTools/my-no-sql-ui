@@ -75,3 +75,13 @@ body {
     box-shadow: 0 0 3px lightgray;
     cursor: default !important;
 }
+
+#dialog-pad {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: var(--app-width);
+    height: var(--app-height);
+    background: rgba(255, 255, 255, 0.876);
+    z-index: 1000;
+}

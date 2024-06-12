@@ -1,5 +1,3 @@
-use std::rc::Rc;
-
 use dioxus::prelude::*;
 use serde::*;
 
@@ -70,18 +68,40 @@ pub fn LeftPanel() -> Element {
 
     let tables = tables.unwrap();
 
-    let table_names = tables.into_iter().map(|name| {
-        let name = Rc::new(name);
-
+    let table_names = tables.into_iter().map(|table| {
         let selected = if let Some(selected_table) = &selected_table {
-            selected_table == name.as_ref()
+            selected_table == &table.name
         } else {
             false
         };
 
+        let mut content = Vec::new();
+
+        content.push(rsx! { "{table.name}" });
+
+        if let Some(persist) = table.persist {
+            if !persist {
+                content.push(rsx! {
+                    span { class: "badge text-bg-danger", "NoPersist" }
+                });
+            }
+        }
+
+        if let Some(max_partitions_amount) = table.max_partitions_amount {
+            content.push(rsx! {
+                span { class: "badge text-bg-warning", "MP:{max_partitions_amount}" }
+            });
+        };
+
+        if let Some(max_rows_per_partition_amount) = table.max_rows_per_partition_amount {
+            content.push(rsx! {
+                span { class: "badge text-bg-warning", "MR:{max_rows_per_partition_amount}" }
+            });
+        };
+
         if selected {
             rsx! {
-                div { class: "table-item selected", "{name}" }
+                div { class: "table-item selected", {content.into_iter()} }
             }
         } else {
             let env = env.clone();
@@ -91,12 +111,12 @@ pub fn LeftPanel() -> Element {
                     onclick: move |_| {
                         consume_context::<Signal<TablesList>>()
                             .write()
-                            .set_selected_table(name.as_str().to_string());
+                            .set_selected_table(table.name.as_str().to_string());
                         consume_context::<Signal<RightPanelState>>()
                             .write()
-                            .load_partitions(env.clone(), name.clone());
+                            .load_partitions(env.clone(), table.name.clone());
                     },
-                    "{name}"
+                    {content.into_iter()}
                 }
             }
         }
@@ -112,7 +132,7 @@ pub fn LeftPanel() -> Element {
 }
 
 #[server]
-async fn get_tables(env: String) -> Result<Vec<String>, ServerFnError> {
+async fn get_tables(env: String) -> Result<Vec<TableJsonModel>, ServerFnError> {
     let fl_url = crate::APP_CTX
         .get_settings()
         .await
@@ -138,9 +158,7 @@ async fn get_tables(env: String) -> Result<Vec<String>, ServerFnError> {
                 );
             }
             let result: Vec<TableJsonModel> = data.get_json().await.unwrap();
-
-            let names: Vec<String> = result.into_iter().map(|table| table.name).collect();
-            Ok(names)
+            Ok(result)
         }
         Err(err) => Err(ServerFnError::new(format!(
             "Can not retrieve tables from server {:?}",
@@ -151,4 +169,11 @@ async fn get_tables(env: String) -> Result<Vec<String>, ServerFnError> {
 #[derive(Clone, Serialize, Deserialize)]
 pub struct TableJsonModel {
     pub name: String,
+    pub persist: Option<bool>,
+
+    #[serde(rename = "maxPartitionsAmount")]
+    pub max_partitions_amount: Option<usize>,
+
+    #[serde(rename = "maxRowsPerPartitionAmount")]
+    pub max_rows_per_partition_amount: Option<usize>,
 }

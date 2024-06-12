@@ -2,6 +2,7 @@
 
 use crate::states::*;
 use dioxus::prelude::*;
+use views::dialog::*;
 use views::*;
 
 //#[cfg(feature = "server")]

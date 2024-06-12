@@ -1,8 +1,10 @@
 use std::collections::BTreeMap;
 
+use crate::TableJsonModel;
+
 pub struct TablesList {
     pub selected_table: Option<String>,
-    pub tables: Option<BTreeMap<String, ()>>,
+    pub tables: Option<BTreeMap<String, TableJsonModel>>,
     pub err: Option<String>,
 
     pub loading: bool,
@@ -32,11 +34,11 @@ impl TablesList {
         self.selected_table.clone()
     }
 
-    pub fn set_loaded_tables(&mut self, src: Vec<String>) {
+    pub fn set_loaded_tables(&mut self, src: Vec<TableJsonModel>) {
         let mut tables = BTreeMap::new();
 
         for table in src {
-            tables.insert(table, ());
+            tables.insert(table.name.to_string(), table);
         }
 
         self.tables = Some(tables);
@@ -44,12 +46,12 @@ impl TablesList {
         self.loading = false;
     }
 
-    pub fn get_tables(&self) -> Option<Vec<String>> {
-        let result: Vec<String> = self
+    pub fn get_tables(&self) -> Option<Vec<TableJsonModel>> {
+        let result: Vec<TableJsonModel> = self
             .tables
             .as_ref()?
-            .keys()
-            .map(|table| table.to_string())
+            .values()
+            .map(|table| table.clone())
             .collect();
         Some(result)
     }

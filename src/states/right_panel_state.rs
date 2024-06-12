@@ -5,7 +5,7 @@ use crate::LoadedRows;
 #[derive(Clone)]
 pub struct RightPanelState {
     pub env: Option<Rc<String>>,
-    pub table_name: Option<Rc<String>>,
+    pub table_name: Option<String>,
     pub partitions: Option<Rc<Vec<Rc<String>>>>,
     pub selected_partition: Option<Rc<String>>,
     pub loading_partitions: bool,
@@ -39,7 +39,7 @@ impl RightPanelState {
         self.loading_rows = false;
     }
 
-    pub fn unwrap_table_name(&self) -> Rc<String> {
+    pub fn unwrap_table_name(&self) -> String {
         self.table_name.clone().unwrap()
     }
 
@@ -47,7 +47,7 @@ impl RightPanelState {
         self.env.clone().unwrap()
     }
 
-    pub fn load_partitions(&mut self, env: Rc<String>, table_name: Rc<String>) {
+    pub fn load_partitions(&mut self, env: Rc<String>, table_name: String) {
         self.env = Some(env.clone());
         self.table_name = Some(table_name);
         self.loading_partitions = false;
