@@ -58,6 +58,7 @@ impl RightPanelState {
         self.selected_partition = None;
         self.loaded_rows = None;
         self.loading_rows = false;
+        self.filter_line = "".to_string();
     }
 
     pub fn set_loading_partitions(&mut self) {
