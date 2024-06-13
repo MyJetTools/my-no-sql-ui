@@ -6,7 +6,7 @@ pub struct TablesList {
     pub selected_table: Option<String>,
     pub tables: Option<BTreeMap<String, TableJsonModel>>,
     pub err: Option<String>,
-
+    pub filter: String,
     pub loading: bool,
 }
 
@@ -17,6 +17,7 @@ impl TablesList {
             tables: None,
             err: None,
             loading: false,
+            filter: "".to_string(),
         }
     }
 
@@ -25,6 +26,7 @@ impl TablesList {
         self.tables = None;
         self.err = None;
         self.loading = false;
+        self.filter = "".to_string();
     }
     pub fn set_selected_table(&mut self, table: String) {
         self.selected_table = Some(table);

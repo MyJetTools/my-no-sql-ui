@@ -9,7 +9,7 @@ use super::*;
 pub fn LeftPanel() -> Element {
     let tables_list = consume_context::<Signal<TablesList>>();
 
-    let (tables, err, selected_table, tables_are_loading) = {
+    let (tables, err, selected_table, tables_are_loading, filter) = {
         let read_access = tables_list.read();
 
         let selected_table = read_access.get_selected_table();
@@ -17,7 +17,13 @@ pub fn LeftPanel() -> Element {
         let err = read_access.get_err();
         let loading = read_access.loading;
 
-        (tables, err, selected_table, loading)
+        (
+            tables,
+            err,
+            selected_table,
+            loading,
+            read_access.filter.clone(),
+        )
     };
 
     if let Some(err) = err {
@@ -68,64 +74,83 @@ pub fn LeftPanel() -> Element {
 
     let tables = tables.unwrap();
 
-    let table_names = tables.into_iter().map(|table| {
-        let selected = if let Some(selected_table) = &selected_table {
-            selected_table == &table.name
-        } else {
-            false
-        };
-
-        let mut content = Vec::new();
-
-        content.push(rsx! { "{table.name}" });
-
-        if let Some(persist) = table.persist {
-            if !persist {
-                content.push(rsx! {
-                    span { class: "badge text-bg-danger", "NoPersist" }
-                });
+    let table_names = tables
+        .into_iter()
+        .filter(|itm| {
+            if filter.is_empty() {
+                return true;
             }
-        }
 
-        if let Some(max_partitions_amount) = table.max_partitions_amount {
-            content.push(rsx! {
-                span { class: "badge text-bg-warning", "MP:{max_partitions_amount}" }
-            });
-        };
+            itm.name.contains(&filter)
+        })
+        .map(|table| {
+            let selected = if let Some(selected_table) = &selected_table {
+                selected_table == &table.name
+            } else {
+                false
+            };
 
-        if let Some(max_rows_per_partition_amount) = table.max_rows_per_partition_amount {
-            content.push(rsx! {
-                span { class: "badge text-bg-warning", "MR:{max_rows_per_partition_amount}" }
-            });
-        };
+            let mut content = Vec::new();
 
-        if selected {
-            rsx! {
-                div { class: "table-item selected", {content.into_iter()} }
-            }
-        } else {
-            let env = env.clone();
-            rsx! {
-                div {
-                    class: "table-item",
-                    onclick: move |_| {
-                        consume_context::<Signal<TablesList>>()
-                            .write()
-                            .set_selected_table(table.name.as_str().to_string());
-                        consume_context::<Signal<RightPanelState>>()
-                            .write()
-                            .load_partitions(env.clone(), table.name.clone());
-                    },
-                    {content.into_iter()}
+            content.push(rsx! { "{table.name}" });
+
+            if let Some(persist) = table.persist {
+                if !persist {
+                    content.push(rsx! {
+                        span { class: "badge text-bg-danger", "NoPersist" }
+                    });
                 }
             }
-        }
-    });
+
+            if let Some(max_partitions_amount) = table.max_partitions_amount {
+                content.push(rsx! {
+                    span { class: "badge text-bg-warning", "MP:{max_partitions_amount}" }
+                });
+            };
+
+            if let Some(max_rows_per_partition_amount) = table.max_rows_per_partition_amount {
+                content.push(rsx! {
+                    span { class: "badge text-bg-warning", "MR:{max_rows_per_partition_amount}" }
+                });
+            };
+
+            if selected {
+                rsx! {
+                    div { class: "table-item selected", {content.into_iter()} }
+                }
+            } else {
+                let env = env.clone();
+                rsx! {
+                    div {
+                        class: "table-item",
+                        onclick: move |_| {
+                            consume_context::<Signal<TablesList>>()
+                                .write()
+                                .set_selected_table(table.name.as_str().to_string());
+                            consume_context::<Signal<RightPanelState>>()
+                                .write()
+                                .load_partitions(env.clone(), table.name.clone());
+                        },
+                        {content.into_iter()}
+                    }
+                }
+            }
+        });
 
     rsx! {
 
         div { id: "left-panel", style: "padding:5px",
             EnvList {}
+            input {
+                class: "form-control",
+                style: "margin-top: 5px; margin-bottom: 5px;",
+                placeholder: "Filter",
+                value: filter,
+                oninput: move |evt| {
+                    let value = evt.value();
+                    consume_context::<Signal<TablesList>>().write().filter = value;
+                }
+            }
             {table_names}
         }
     }
