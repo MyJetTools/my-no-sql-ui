@@ -157,13 +157,35 @@ pub fn RightPanel() -> Element {
         }
     });
 
-    let header_values = (0..amount).map(|no|{
-         let values = data.get_values(no, &headers);
+    let mut table_values_to_render = Vec::with_capacity(amount);
 
-         let values_to_render = values.iter().map(|value|{
-             match value{
-                 Some(value)=>{
-                     rsx!{
+    for no in 0..amount {
+        let values = data.get_values(no, &headers);
+
+        let skip_it = if right_panel_read_access.filter_line.len() > 0 {
+            let mut skip_it = true;
+            for value in &values {
+                if let Some(value) = value {
+                    if value.contains(right_panel_read_access.filter_line.as_str()) {
+                        skip_it = false;
+                        break;
+                    }
+                }
+            }
+
+            skip_it
+        } else {
+            false
+        };
+
+        if skip_it {
+            continue;
+        }
+
+        let values_to_render = values.iter().map(|value|{
+            match value{
+                Some(value)=>{
+                    rsx!{
                         td {
                             div { style: "width:200px; height:100px; overflow-y:auto; overflow-wrap:anywhere",
                                 "{value}"
@@ -171,19 +193,19 @@ pub fn RightPanel() -> Element {
                         }
                     }
 
-                 },
-                 None=>{
-                     rsx!{
+                },
+                None=>{
+                    rsx!{
                         td {}
                     }
-                 }
-             }
-         });
+                }
+            }
+        });
 
-         rsx!{
+        table_values_to_render.push(rsx! {
             tr { {values_to_render} }
-        }
-     });
+        });
+    }
 
     rsx! {
 
@@ -200,6 +222,15 @@ pub fn RightPanel() -> Element {
                 {rows_to_render}
             }
 
+            input {
+                class: "form-control",
+                style: "width: 200px; display:inline; font-size:12px;",
+                placeholder: "Filter",
+                oninput: move |evn| {
+                    right_panel_state.write().filter_line = evn.value().trim().to_string();
+                }
+            }
+
             div { style: "height: calc(var(--app-height) - 30px); overflow-y:auto",
                 table {
                     style: "width:auto;font-size:10px;min-width: 100%;",
@@ -210,7 +241,7 @@ pub fn RightPanel() -> Element {
                         {headers_to_render}
                     }
 
-                    {header_values}
+                    {table_values_to_render.into_iter()}
                 }
             }
         }

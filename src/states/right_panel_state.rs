@@ -12,6 +12,7 @@ pub struct RightPanelState {
     pub error: Option<String>,
     pub loaded_rows: Option<Rc<LoadedRows>>,
     pub loading_rows: bool,
+    pub filter_line: String,
 }
 
 impl RightPanelState {
@@ -25,6 +26,7 @@ impl RightPanelState {
             error: None,
             loaded_rows: None,
             loading_rows: false,
+            filter_line: "".to_string(),
         }
     }
 
