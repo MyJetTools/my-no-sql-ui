@@ -69,6 +69,7 @@ body {
     border-radius: 5px;
     background-color: black;
     margin: 1px;
+    overflow-x: auto;
 }
 
 .selected {
