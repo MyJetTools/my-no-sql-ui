@@ -202,9 +202,7 @@ pub fn RightPanel() -> Element {
 
             div { style: "height: calc(var(--app-height) - 30px); overflow-y:auto",
                 table {
-
-                    style: "width:auto; font-size:10px;",
-
+                    style: "width:auto;font-size:10px;min-width: 100%;",
                     class: "table table-bordered  table-sm",
                     thead {
                         class: "table-light",
