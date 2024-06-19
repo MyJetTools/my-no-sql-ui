@@ -110,7 +110,7 @@ pub fn LeftPanel() -> Element {
 
             if let Some(max_rows_per_partition_amount) = table.max_rows_per_partition_amount {
                 content.push(rsx! {
-                    span { class: "badge text-bg-warning", "MR:{max_rows_per_partition_amount}" }
+                    span { class: "badge text-bg-info", "MR:{max_rows_per_partition_amount}" }
                 });
             };
 
