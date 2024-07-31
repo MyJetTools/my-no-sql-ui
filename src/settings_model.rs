@@ -38,7 +38,7 @@ impl MyNoSqlConfig {
         let settings = my_ssh::OverSshConnectionSettings::parse(&self.url, ssh_credentials).await;
 
         if let Some(ssh_creds) = settings.ssh_credentials {
-            return flurl::FlUrl::new(settings.url.as_str())
+            return flurl::FlUrl::new(settings.remote_resource_string.as_str())
                 .set_timeout(Duration::from_secs(3))
                 .set_ssh_credentials(Arc::new(ssh_creds))
                 .set_ssh_sessions_pool(ssh_pool.clone());
