@@ -14,7 +14,7 @@ impl AppContext {
     pub fn new() -> Self {
         AppContext {
             ssh_pool: Arc::new(my_ssh::SshSessionsPool::new()),
-            settings_read: SettingsReader::new(".my_no_sql_ui"),
+            settings_read: SettingsReader::new(".my-no-sql-ui"),
         }
     }
 
