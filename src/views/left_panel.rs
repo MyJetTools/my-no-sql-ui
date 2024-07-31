@@ -158,12 +158,7 @@ pub fn LeftPanel() -> Element {
 
 #[server]
 async fn get_tables(env: String) -> Result<Vec<TableJsonModel>, ServerFnError> {
-    let fl_url = crate::APP_CTX
-        .get_settings()
-        .await
-        .get_my_no_sql_config(env.as_str())
-        .get_fl_url()
-        .await;
+    let fl_url = crate::APP_CTX.get_fl_url(env.as_str()).await;
 
     let response = fl_url
         .append_path_segment("Tables")

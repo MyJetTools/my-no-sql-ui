@@ -259,12 +259,8 @@ async fn load_partitions(
     env: String,
     table_name: String,
 ) -> Result<ListOfPartitionsJsonModel, ServerFnError> {
-    let resp = crate::APP_CTX
-        .get_settings()
-        .await
-        .get_my_no_sql_config(env.as_str())
-        .get_fl_url()
-        .await
+    let fl_url = crate::APP_CTX.get_fl_url(env.as_str()).await;
+    let resp = fl_url
         .append_path_segment("Partitions")
         .append_query_param("tableName", Some(table_name))
         .get()
@@ -303,10 +299,7 @@ async fn load_rows(
     use rust_extensions::array_of_bytes_iterator::SliceIterator;
 
     let resp = crate::APP_CTX
-        .get_settings()
-        .await
-        .get_my_no_sql_config(env.as_str())
-        .get_fl_url()
+        .get_fl_url(env.as_str())
         .await
         .append_path_segment("Row")
         .append_query_param("tableName", Some(table_name))

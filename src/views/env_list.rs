@@ -75,11 +75,11 @@ pub fn EnvList() -> Element {
 
 #[server]
 async fn get_envs() -> Result<Vec<String>, ServerFnError> {
-    let settings = crate::APP_CTX.get_settings().await;
+    let settings = crate::APP_CTX.settings_read.get_settings().await;
 
     let mut result = Vec::new();
 
-    for itm in settings.servers {
+    for itm in &settings.envs {
         result.push(itm.name.clone());
     }
 

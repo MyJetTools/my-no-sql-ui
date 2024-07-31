@@ -19,23 +19,29 @@ server = [
     "flurl",
     "rust-extensions",
     "my-settings-reader",
+    "my-ssh",
 ]
 web = ["dioxus/web"]
 
 [dependencies]
 dioxus = { version = "0.5", features = ["fullstack", "router"] }
 
+flurl = { tag = "0.5.3", git = "https://github.com/MyJetTools/fl-url.git", features = [
+    "with-ssh",
+], optional = true }
 tokio = { version = "*", features = ["full"], optional = true }
 serde = { version = "*", features = ["derive"] }
 serde_json = "*"
 serde_yaml = { version = "*", optional = true }
 futures = { version = "*", optional = true }
 my-json = { tag = "0.2.4", git = "https://github.com/MyJetTools/my-json.git" }
-my-settings-reader = { tag = "0.3.1", git = "https://github.com/MyJetTools/my-settings-reader.git", optional = true }
-flurl = { tag = "0.5.3", git = "https://github.com/MyJetTools/fl-url.git", optional = true }
+my-settings-reader = { tag = "0.3.2", git = "https://github.com/MyJetTools/my-settings-reader.git", optional = true }
 
 lazy_static = { version = "*", optional = true }
 
 rust-extensions = { tag = "0.1.4", git = "https://github.com/MyJetTools/rust-extensions.git", optional = true }
 async-trait = { version = "*", optional = true }
 my-logger = { tag = "1.1.0", git = "https://github.com/MyJetTools/my-logger.git", optional = true }
+
+
+my-ssh = { tag = "0.1.1", git = "https://github.com/MyJetTools/my-ssh.git", optional = true }
