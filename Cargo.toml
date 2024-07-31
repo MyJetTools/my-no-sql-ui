@@ -32,7 +32,7 @@ serde_yaml = { version = "*", optional = true }
 futures = { version = "*", optional = true }
 my-json = { tag = "0.2.4", git = "https://github.com/MyJetTools/my-json.git" }
 my-settings-reader = { tag = "0.3.1", git = "https://github.com/MyJetTools/my-settings-reader.git", optional = true }
-flurl = { tag = "0.5.2", git = "https://github.com/MyJetTools/fl-url.git", optional = true }
+flurl = { tag = "0.5.3", git = "https://github.com/MyJetTools/fl-url.git", optional = true }
 
 lazy_static = { version = "*", optional = true }
 

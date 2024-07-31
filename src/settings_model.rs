@@ -22,6 +22,7 @@ impl SettingsModel {
 pub struct MyNoSqlConfig {
     pub url: String,
     pub name: String,
+    pub server_name: Option<String>,
     pub cert_location: Option<String>,
     pub cert_password: Option<String>,
 }
@@ -42,9 +43,15 @@ impl MyNoSqlConfig {
                 let client_certificate =
                     ClientCertificate::from_pks12_file(cert_location.as_str(), cert_password).await;
 
-                return flurl::FlUrl::new(self.url.as_str())
+                let result = flurl::FlUrl::new(self.url.as_str())
                     .set_timeout(Duration::from_secs(3))
                     .with_client_certificate(client_certificate);
+
+                if let Some(server_name) = &self.server_name {
+                    return result.set_tls_domain(server_name.to_string());
+                }
+
+                return result;
             }
         }
         flurl::FlUrl::new(self.url.as_str()).set_timeout(Duration::from_secs(3))
