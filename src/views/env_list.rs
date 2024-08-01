@@ -1,53 +1,63 @@
+use std::rc::Rc;
+
 use dioxus::prelude::*;
 
-use crate::{EnvListState, RightPanelState, TablesList};
-
 #[component]
-pub fn EnvList() -> Element {
-    let mut envs_state = consume_context::<Signal<EnvListState>>();
+pub fn EnvList(envs: Vec<Rc<String>>, on_change: EventHandler<String>) -> Element {
+    let mut selected_env = use_signal(|| None::<Rc<String>>);
 
-    let (items, loading, selected_env) = {
-        let read_access = envs_state.read();
-        (
-            read_access.items.clone(),
-            read_access.loading,
-            read_access.selected_env.clone(),
+    let seleted_env_value = selected_env.read().clone();
+    let my_eval = if seleted_env_value.is_none() {
+        let my_eval = eval(
+            r#"
+            const env = localStorage.getItem("selectedEnv");
+            if (env) {
+                dioxus.send(env);
+            }else{
+                dioxus.send("");
+            }
+            "#,
+        );
+
+        let mut eval_owend = my_eval.to_owned();
+        spawn(async move {
+            let value = eval_owend.recv().await.unwrap();
+
+            match value {
+                serde_json::Value::String(value) => {
+                    on_change.call(value.clone());
+                    *selected_env.write() = Some(value.into());
+                }
+
+                _ => {
+                    panic!("Somehout we got non string value");
+                }
+            }
+        });
+
+        my_eval
+    } else {
+        eval(
+            r#"    while(true){
+               let msg = await dioxus.recv();
+               localStorage.setItem("selectedEnv", msg);
+            }"#,
         )
     };
 
-    if envs_state.read().items.is_none() {
-        if !loading {
-            envs_state.write().loading = true;
-            let mut envs_state_owned = envs_state.to_owned();
-
-            spawn(async move {
-                match get_envs().await {
-                    Ok(items) => {
-                        envs_state_owned.write().set_items(items);
-                    }
-                    Err(_) => {
-                        envs_state_owned.write().loading = false;
-                    }
-                }
-            });
-        }
-    }
-
-    if items.is_none() {
+    if seleted_env_value.is_none() {
         return rsx! {
-            div { class: "alert alert-info", "Loading..." }
+            div { "Loading selected env..." }
         };
     }
 
-    let items = items.unwrap();
+    let seleted_env_value = seleted_env_value.unwrap();
 
-    let items = items.into_iter().map(|itm| {
-        if let Some(selected_env) = selected_env.as_ref() {
-            if selected_env.as_str() == itm.as_str() {
-                return rsx! {
-                    option { selected: true, "{itm}" }
-                };
-            }
+    let items = envs.into_iter().map(|itm| {
+        if seleted_env_value.as_str() == itm.as_str() {
+            return rsx! {
+                option { selected: true, "{itm}" }
+            };
         }
 
         rsx! {
@@ -63,9 +73,13 @@ pub fn EnvList() -> Element {
 
                 style: "background-color: #2c2c2c;color: white;border-color: black;",
                 onchange: move |e| {
-                    envs_state.write().set_active_env(e.value().into());
-                    consume_context::<Signal<TablesList>>().write().reset();
-                    consume_context::<Signal<RightPanelState>>().write().reset();
+                    let value = e.value();
+                    let value_spawn = value.clone();
+                    let _ = my_eval.send(value_spawn.into());
+                    if seleted_env_value.as_str() == value.as_str() {
+                        return;
+                    }
+                    on_change.call(e.value());
                 },
                 {items}
             }
@@ -73,15 +87,7 @@ pub fn EnvList() -> Element {
     }
 }
 
-#[server]
-async fn get_envs() -> Result<Vec<String>, ServerFnError> {
-    let settings = crate::APP_CTX.settings_read.get_settings().await;
+/*
+       envs_state.write().set_active_env(e.value().into());
 
-    let mut result = Vec::new();
-
-    for itm in &settings.envs {
-        result.push(itm.name.clone());
-    }
-
-    Ok(result)
-}
+*/

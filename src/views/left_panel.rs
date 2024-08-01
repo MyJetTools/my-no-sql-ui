@@ -3,8 +3,6 @@ use serde::*;
 
 use crate::states::*;
 
-use super::*;
-
 #[component]
 pub fn LeftPanel() -> Element {
     let tables_list = consume_context::<Signal<TablesList>>();
@@ -28,23 +26,16 @@ pub fn LeftPanel() -> Element {
 
     if let Some(err) = err {
         return rsx! {
-
-            div { id: "left-panel", style: "padding:5px",
-                EnvList {}
-                div { class: "alert alert-danger", "{err}" }
-            }
+            div { class: "alert alert-danger", "{err}" }
         };
     }
 
     let env = consume_context::<Signal<EnvListState>>()
         .read()
-        .selected_env
-        .clone();
+        .get_selected_env();
 
     if env.is_none() {
-        return rsx! {
-            div { id: "left-panel", style: "padding:5px", EnvList {} }
-        };
+        return None;
     }
 
     let env = env.unwrap();
@@ -67,9 +58,7 @@ pub fn LeftPanel() -> Element {
             });
         }
 
-        return rsx! {
-            div { id: "left-panel", style: "padding:5px", EnvList {} }
-        };
+        return None;
     }
 
     let tables = tables.unwrap();
@@ -139,20 +128,17 @@ pub fn LeftPanel() -> Element {
 
     rsx! {
 
-        div { id: "left-panel", style: "padding:5px",
-            EnvList {}
-            input {
-                class: "form-control",
-                style: "margin-top: 5px; margin-bottom: 5px;",
-                placeholder: "Filter",
-                value: filter,
-                oninput: move |evt| {
-                    let value = evt.value();
-                    consume_context::<Signal<TablesList>>().write().filter = value;
-                }
+        input {
+            class: "form-control",
+            style: "margin-top: 5px; margin-bottom: 5px;",
+            placeholder: "Filter",
+            value: filter,
+            oninput: move |evt| {
+                let value = evt.value();
+                consume_context::<Signal<TablesList>>().write().filter = value;
             }
-            {table_names}
         }
+        {table_names}
     }
 }
 
