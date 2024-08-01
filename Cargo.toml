@@ -29,6 +29,9 @@ dioxus = { version = "0.5", features = ["fullstack", "router"] }
 flurl = { tag = "0.5.3", git = "https://github.com/MyJetTools/fl-url.git", features = [
     "with-ssh",
 ], optional = true }
+
+dioxus-shared = { tag = "0.1.0", git = "https://github.com/MyJetTools/dioxus-shared.git" }
+
 tokio = { version = "*", features = ["full"], optional = true }
 serde = { version = "*", features = ["derive"] }
 serde_json = "*"

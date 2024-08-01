@@ -2,6 +2,7 @@
 
 use crate::states::*;
 use dioxus::prelude::*;
+use dioxus_shared::{components::*, macros::*, states::*};
 use views::*;
 
 //#[cfg(feature = "server")]
@@ -34,32 +35,7 @@ fn app() -> Element {
     use_context_provider(|| Signal::new(RightPanelState::new()));
     use_context_provider(|| Signal::new(TablesList::new()));
 
-    let resource = use_resource(|| get_envs());
-
-    let data = resource.read_unchecked();
-
-    match &*data {
-        Some(data) => match data {
-            Ok(result) => {
-                consume_context::<Signal<EnvListState>>()
-                    .write()
-                    .set_items(result.clone());
-                return rsx! {
-                    ActiveApp {}
-                };
-            }
-            Err(err) => {
-                let err = format!("Error loading environments. Err: {}", err);
-                return rsx! {
-                    {err}
-                };
-            }
-        },
-
-        None => {
-            return rsx! { "Loading environments..." };
-        }
-    }
+    generate_loading_env_code!();
 }
 
 #[component]
@@ -71,20 +47,10 @@ fn ActiveApp() -> Element {
         (read_access.unwrap_envs(), read_access.get_selected_env())
     };
 
-    let env_js = if let Some(selected_env) = selected_env.as_ref() {
-        rsx! {
-            script { "localStorage.setItem('selectedEnv', '{selected_env.as_str()}');" }
-        }
-    } else {
-        rsx! {
-            div {}
-        }
-    };
-
     rsx! {
 
         div { id: "left-panel", style: "padding:5px",
-            EnvList {
+            EnvSelector {
                 envs,
                 on_change: move |value: String| {
                     match selected_env.clone() {
@@ -106,12 +72,6 @@ fn ActiveApp() -> Element {
         RightPanel {}
     }
 }
-
-/*
-
-
-*/
-
 #[server]
 async fn get_envs() -> Result<Vec<String>, ServerFnError> {
     let settings = crate::APP_CTX.settings_read.get_settings().await;
