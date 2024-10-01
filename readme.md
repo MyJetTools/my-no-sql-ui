@@ -3,15 +3,17 @@ Please create .my-no-sql-ui in home directory
 
 ```yaml
 servers:
-  - url: https://my-nosql-test.someserver.tech
-    name: Server1
-    cert_location: ~/cert_path/cert.pfx
-    cert_password: PasswordOfTheCert
+envs:
+  - url: ssh:user@10.0.0.1:22->http://10.0.0.2:5123
+    name: Dev
+  - url: ssh:user@10.0.0.1:22->http://10.0.0.4:5123
+    name: Demo-IM
 
 
-  - url: http://127.0.0.1:5123
-    name: Localhost
-
+ssh_credentials:
+  "*":
+    cert_path: /cert
+    cert_pass_prase: cert_pass_phrase
 ```
 
 
